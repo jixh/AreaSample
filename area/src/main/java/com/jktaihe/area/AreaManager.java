@@ -4,12 +4,11 @@ package com.jktaihe.area;
 import android.content.Context;
 import android.support.v7.app.AlertDialog;
 
+import com.jktaihe.area.model.CityBean;
+import com.jktaihe.area.model.ProvinceBean;
 import com.jktaihe.area.ui.AreaDialog;
-
 import java.util.ArrayList;
-import java.util.HashMap;
 import java.util.List;
-import java.util.Map;
 
 /**
  * Created by jktaihe on 15/10/17.
@@ -18,38 +17,28 @@ import java.util.Map;
 
 public class AreaManager{
 
-    public static List<String> mProvinceDatas = new ArrayList<>();
-
-    public static Map<String,List<String>> citys = new HashMap<>();
-
+    static List<ProvinceBean> dataList = new ArrayList<>();
 
     private static void initData(){
-        mProvinceDatas.add("A");
-        mProvinceDatas.add("B");
+        for (int i = 1; i < 20; i++) {
 
-        List<String> citys1 = new ArrayList<>();
-        citys1.add("a1");
-        citys1.add("a2");
-        citys1.add("a3");
-        citys1.add("a4");
-        citys.put("A",citys1);
+            List<CityBean> cityList = new ArrayList<>();
+            for (int j = 1; j < 10; j++) {
+                cityList.add(new CityBean("市"+i+j));
+            }
 
-        List<String> citys2 = new ArrayList<>();
-        citys1.add("b1");
-        citys1.add("b2");
-        citys1.add("b3");
-        citys1.add("b4");
-        citys.put("B",citys2);
+            dataList.add(new ProvinceBean("省"+i,cityList));
+        }
     }
 
 
 
     public static void showAreaSelect(Context context){
-        if (mProvinceDatas.isEmpty()){
+        if (dataList.isEmpty()){
             initData();
         }
 
-        AreaDialog areaDialog = new AreaDialog(context,mProvinceDatas,citys);
+        AreaDialog areaDialog = new AreaDialog(context,dataList);
         areaDialog.show();
     }
 }

@@ -1,6 +1,5 @@
 package com.jktaihe.area.adapter;
 
-import android.content.Context;
 import android.support.v7.widget.RecyclerView;
 import android.view.LayoutInflater;
 import android.view.View;
@@ -17,46 +16,30 @@ import java.util.List;
  * blog: blog.jktaihe.com
  */
 
-public abstract class RVSingleTypeAdapter extends RecyclerView.Adapter<RVSingleTypeAdapter.RVViewHolder> {
+public abstract class RVSingleTypeAdapter<DATA> extends RecyclerView.Adapter<RVSingleTypeAdapter.RVViewHolder> {
 
-    private List<String> datas;
-    private Context mContext;
+    protected List<DATA> mDataList;
 
-    public RVSingleTypeAdapter(Context context){
-        datas = new ArrayList<>();
+    public RVSingleTypeAdapter(){
+        mDataList = new ArrayList<>();
     }
 
 
     @Override
     public RVViewHolder onCreateViewHolder(ViewGroup parent, int viewType) {
-        View view = LayoutInflater.from(mContext).inflate(getItemResID(),parent,false);
+        View view = LayoutInflater.from(parent.getContext()).inflate(getItemResID(),null);
         RVViewHolder viewHolder = new RVViewHolder(view);
         return viewHolder;
     }
 
-
-    @Override
-    public void onBindViewHolder(RVViewHolder holder, int position) {
-        holder.item.setText(datas.get(position));
-    }
-
     @Override
     public int getItemCount() {
-        return datas.size();
+        return mDataList.size();
     }
 
 
     public abstract int getItemResID();
 
-    public List<String> getDatas() {
-        return datas;
-    }
-
-    public void setDatas(List<String> datas) {
-        this.datas.clear();
-        if (datas != null && !datas.isEmpty())
-            this.datas.addAll(datas);
-    }
 
     static class RVViewHolder extends RecyclerView.ViewHolder{
 
@@ -66,5 +49,20 @@ public abstract class RVSingleTypeAdapter extends RecyclerView.Adapter<RVSingleT
             super(itemView);
             item = itemView.findViewById(R.id.tv_context);
         }
+    }
+
+    public List<DATA> getDataList() {
+        return mDataList;
+    }
+
+    public void setDataList(List<DATA> dataList) {
+
+        if (mDataList == null) dataList = new ArrayList<>();
+
+        this.mDataList.clear();
+
+        this.mDataList.addAll(dataList);
+
+        notifyDataSetChanged();
     }
 }

@@ -1,0 +1,15 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+
+    <style name="AreaAlertDialog" parent="Theme.AppCompat.DayNight.Dialog">
+        <item name="android:layout">@layout/abc_alert_dialog_material</item>
+        <item name="android:windowMinWidthMajor">100%</item>
+        <item name="android:windowMinWidthMinor">100%</item>
+
+    </style>
+
+    <style name="btn_sytle">
+        <item name="android:layout_margin">10dp</item>
+
+    </style>
+</resources>
