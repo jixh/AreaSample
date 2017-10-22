@@ -17,7 +17,7 @@ public class CityAdapter extends RVSingleTypeAdapter<CityBean> {
 
     @Override
     public void onBindViewHolder(RVViewHolder holder, int position) {
-        holder.item.setText(mDataList.get(position).getName());
+        holder.item.setText(getItem(position).getName());
     }
 
     @Override

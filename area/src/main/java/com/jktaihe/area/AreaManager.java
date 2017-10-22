@@ -33,12 +33,13 @@ public class AreaManager{
 
 
 
-    public static void showAreaSelect(Context context){
+    public static void showAreaSelect(Context context,AreaDialog.SelectListener selectListener){
         if (dataList.isEmpty()){
             initData();
         }
 
         AreaDialog areaDialog = new AreaDialog(context,dataList);
+        areaDialog.setSelectListener(selectListener);
         areaDialog.show();
     }
 }

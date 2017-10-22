@@ -5,9 +5,7 @@ import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.TextView;
-
 import com.jktaihe.area.R;
-
 import java.util.ArrayList;
 import java.util.List;
 
@@ -19,27 +17,30 @@ import java.util.List;
 public abstract class RVSingleTypeAdapter<DATA> extends RecyclerView.Adapter<RVSingleTypeAdapter.RVViewHolder> {
 
     protected List<DATA> mDataList;
+    private int size = 0;
 
     public RVSingleTypeAdapter(){
         mDataList = new ArrayList<>();
     }
 
-
     @Override
     public RVViewHolder onCreateViewHolder(ViewGroup parent, int viewType) {
         View view = LayoutInflater.from(parent.getContext()).inflate(getItemResID(),null);
+        view.setLayoutParams(new RecyclerView.LayoutParams(ViewGroup.LayoutParams.MATCH_PARENT, ViewGroup.LayoutParams.WRAP_CONTENT));
         RVViewHolder viewHolder = new RVViewHolder(view);
         return viewHolder;
     }
 
     @Override
     public int getItemCount() {
-        return mDataList.size();
+        return size ==0 ? 0 :Integer.MAX_VALUE;
     }
 
+    public DATA getItem(int position){
+    return mDataList.get(position%size);
+    }
 
     public abstract int getItemResID();
-
 
     static class RVViewHolder extends RecyclerView.ViewHolder{
 
@@ -63,6 +64,12 @@ public abstract class RVSingleTypeAdapter<DATA> extends RecyclerView.Adapter<RVS
 
         this.mDataList.addAll(dataList);
 
+        size = this.mDataList.size();
+
         notifyDataSetChanged();
+    }
+
+    public int getMaxSize() {
+        return size;
     }
 }

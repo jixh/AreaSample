@@ -1,23 +1,19 @@
 package com.jktaihe.area.ui;
 
-import android.app.Activity;
 import android.content.Context;
 import android.os.Bundle;
+import android.os.Handler;
+import android.os.Message;
 import android.support.annotation.NonNull;
 import android.support.v7.app.AlertDialog;
-import android.support.v7.widget.LinearLayoutManager;
-import android.support.v7.widget.LinearSnapHelper;
-import android.support.v7.widget.RecyclerView;
-import android.view.Display;
 import android.view.Gravity;
 import android.view.View;
 import android.view.Window;
-import android.view.WindowManager;
 import com.jktaihe.area.R;
 import com.jktaihe.area.adapter.CityAdapter;
 import com.jktaihe.area.adapter.ProvinceAdapter;
+import com.jktaihe.area.model.CityBean;
 import com.jktaihe.area.model.ProvinceBean;
-
 import java.util.ArrayList;
 import java.util.List;
 
@@ -28,17 +24,18 @@ import java.util.List;
 
 public class AreaDialog extends AlertDialog implements View.OnClickListener{
 
-    private RecyclerView rvProvince;
-    private RecyclerView rvCity;
-    private List<ProvinceBean> datas = new ArrayList<>();
-    private Context mContext;
-    private LinearSnapHelper shProvince;
-    private LinearSnapHelper shCity;
+    private AreaRecyclerView rvProvince;
+    private AreaRecyclerView rvCity;
+    private List<ProvinceBean> mDataList = new ArrayList<>();
+    private ProvinceBean mSelectedProvince;
+    private CityBean mSelectedCity;
+    private SelectListener mSelectListener;
+    private Handler handlerCity;
+    private static final int centerPosition = 3;
 
-    public AreaDialog(@NonNull Context context,List<ProvinceBean> datas) {
+    public AreaDialog(@NonNull Context context,List<ProvinceBean> dataList) {
         super(context,R.style.AreaAlertDialog);
-        this.mContext = context;
-        setDatas(datas);
+        setDataList(dataList);
     }
 
     @Override
@@ -61,42 +58,42 @@ public class AreaDialog extends AlertDialog implements View.OnClickListener{
 
         rvProvince = findViewById(R.id.rv_province);
         rvCity = findViewById(R.id.rv_city);
-        shProvince = new LinearSnapHelper();
-        shProvince.attachToRecyclerView(rvProvince);
-        shCity = new LinearSnapHelper();
-        shCity.attachToRecyclerView(rvCity);
-
 
         final CityAdapter cityAdapter = new CityAdapter();
-        rvCity.setLayoutManager(new LinearLayoutManager(mContext));
         rvCity.setAdapter(cityAdapter);
 
-        final ProvinceAdapter provinceAdapter = new ProvinceAdapter();
-        rvProvince.setLayoutManager(new LinearLayoutManager(mContext));
-        rvProvince.setAdapter(provinceAdapter);
-
-
-        cityAdapter.setDataList(datas.get(provinceAdapter.getSelectPosition()).getCitys());
-        provinceAdapter.setDataList(datas);
-        rvProvince.addOnScrollListener(new RecyclerView.OnScrollListener() {
+        handlerCity = new Handler(new Handler.Callback() {
             @Override
-            public void onScrollStateChanged(RecyclerView recyclerView, int newState) {
-                super.onScrollStateChanged(recyclerView, newState);
-                if (newState == 0){
-                    cityAdapter.setDataList(datas.get(provinceAdapter.getSelectPosition()).getCitys());
-                }
+            public boolean handleMessage(Message msg) {
+                cityAdapter.setDataList(mSelectedProvince.getCitys());
+                rvCity.scrollToPosition(cityAdapter.getMaxSize()*10000);
+                return false;
+            }
+        });
+        rvCity.setScrollListener(new AreaRecyclerView.ScrollListener() {
+            @Override
+            public void onScroll(int position) {
+                mSelectedCity = cityAdapter.getItem(position);
             }
         });
 
+        final ProvinceAdapter provinceAdapter = new ProvinceAdapter();
+        provinceAdapter.setDataList(mDataList);
+        rvProvince.setAdapter(provinceAdapter);
+        rvProvince.setScrollListener(new AreaRecyclerView.ScrollListener() {
+            @Override
+            public void onScroll(int position) {
+                mSelectedProvince = provinceAdapter.getItem(position);
+                handlerCity.sendEmptyMessage(0);
+            }
+        });
+        rvProvince.scrollToPosition(provinceAdapter.getMaxSize()*10000);
 
+
+        mSelectedProvince = provinceAdapter.getItem(provinceAdapter.getMaxSize()*10000+centerPosition);
+        handlerCity.sendEmptyMessage(0);
     }
 
-    @Override
-    public void show() {
-        super.show();
-
-
-    }
 
     @Override
     public void onClick(View v) {
@@ -104,14 +101,23 @@ public class AreaDialog extends AlertDialog implements View.OnClickListener{
         if (id == R.id.tv_cancel){
 
         }else if(id == R.id.tv_confirm){
-
+            if (mSelectListener!=null)
+                mSelectListener.select(mSelectedProvince,mSelectedCity);
         }
         dismiss();
     }
 
-    public void setDatas(List<ProvinceBean> datas) {
-        if (datas==null) datas = new ArrayList<>();
-        this.datas.clear();
-        this.datas.addAll(datas);
+    public void setDataList(List<ProvinceBean> dataList) {
+        if (dataList ==null) dataList = new ArrayList<>();
+        this.mDataList.clear();
+        this.mDataList.addAll(dataList);
+    }
+
+    public interface SelectListener{
+        void select(ProvinceBean province,CityBean city);
+    }
+
+    public void setSelectListener(SelectListener mSelectListener) {
+        this.mSelectListener = mSelectListener;
     }
 }

@@ -10,26 +10,16 @@ import com.jktaihe.area.model.ProvinceBean;
 
 public class ProvinceAdapter extends RVSingleTypeAdapter<ProvinceBean> {
 
-    private  int selectPosition;
-
     public ProvinceAdapter() {
     }
 
     @Override
     public void onBindViewHolder(RVViewHolder holder, int position) {
-        holder.item.setText(mDataList.get(position).getName());
+        holder.item.setText(getItem(position).getName());
     }
 
     @Override
     public int getItemResID() {
         return R.layout.item_province;
-    }
-
-    public int getSelectPosition() {
-        return selectPosition;
-    }
-
-    public void setSelectPosition(int selectPosition) {
-        this.selectPosition = selectPosition;
     }
 }
